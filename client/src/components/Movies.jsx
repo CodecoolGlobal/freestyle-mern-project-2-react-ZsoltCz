@@ -1,15 +1,12 @@
-import Movie from "./Movie"
+import Movie from "./Movie";
 
-function Movies ({ movies, user, setUser, setMessage }) {
+function Movies ({ movies }) {
     return (
         <div className="movieContainer">
             {movies.map((movie) => (
                 <Movie
                     key={movie.imdbID}
                     movie={movie}
-                    user={user}
-                    setUser={setUser}
-                    setMessage={setMessage}
                 />
             ))}
         </div>

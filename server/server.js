@@ -6,6 +6,8 @@ const User = require("./model/User");
 const express = require("express");
 const app = express();
 
+const bcrypt = require('bcrypt');
+
 const port = 3001;
 
 mongoose
@@ -44,9 +46,14 @@ app.get("/api/v1/profile/:id", async (req, res) => {
 });
 
 app.post("/api/v1/register", async (req, res) => {
+  const { email, userName, password } = req.body;
   try {
-    const user = await User.create({ ...req.body });
-    res.json(user);
+    const existingUser = await User.findOne({ email: email });
+    if (!existingUser) {
+      const user = await User.create({ email, userName, password });
+      return res.json(user);
+    }
+    res.status(400).send("E-mail already in use");
   } catch (error) {
     console.error(error);
     res.status(500).send("Error");
@@ -54,15 +61,19 @@ app.post("/api/v1/register", async (req, res) => {
 });
 
 app.put("/api/v1/profile/:id", async (req, res) => {
-    console.log(req.body);
+    //console.log(req.body);
+    const { userName, email, password, favorites } = req.body;
   try {
-    const user = await User.findByIdAndUpdate(
-      req.params.id,
-      { ...req.body },
-      { new: true }
+    const user = await User.findById(
+      req.params.id
     );
-    console.log(user)
+    //console.log(user)
     if (user) {
+      user.password = password;
+      user.userName = userName;
+      user.email = email;
+      user.favorites = favorites;
+      await user.save({ validateModifiedOnly: true });
       res.json(user);
     } else {
       res.status(404).send("User not found");
@@ -94,15 +105,19 @@ app.post("/api/v1/login", async (req, res) => {
   try {
     const user = await User.findOne({ email: req.body.email });
 
-    console.log(user);
     if (user) {
-      if (user.password === req.body.password) {
-        res.status(200).json(user);
-      } else {
-        res.status(401).send("Incorrect password");
-      }
+      bcrypt.compare(req.body.password, user.password, (err, match) => {
+        if (err) {
+          return res.status(500).send("An error has occured");
+        }
+        if (match) {
+          res.status(200).json(user);
+        } else {
+          res.status(401).send("Incorrect e-mail or password");
+        }
+      })
     } else {
-      res.status(404).send("User not found");
+      res.status(404).send("Incorrect e-mail or password");
     }
   } catch (error) {
     console.error(error);

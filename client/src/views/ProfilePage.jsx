@@ -1,11 +1,16 @@
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import Movies from '../components/Movies';
+import { UserContext } from "../context/userContext";
+import { MessageContext } from "../context/messageContext";
 
-function ProfilePage({ user, setLoggedIn, setUser, setMessage, APIKEY }) {
+function ProfilePage({ APIKEY }) {
     const [editMode, setEditMode] = useState(false);
 
     const navigate = useNavigate();
+
+    const { user, setUser } = useContext(UserContext);
+    const { setMessage } = useContext(MessageContext);
 
     const [userInput, setUserInput] = useState({
         userName: user.userName,
@@ -81,7 +86,6 @@ function ProfilePage({ user, setLoggedIn, setUser, setMessage, APIKEY }) {
 
             if (response.status === 200) {
                 console.log("Successfully deleted account");
-                setLoggedIn(false);
                 setUser(null);
                 navigate("/");
                 setMessage({
@@ -126,7 +130,7 @@ function ProfilePage({ user, setLoggedIn, setUser, setMessage, APIKEY }) {
         <main>
             <h2>Favorites:</h2>
             {!editMode && favMovies && (
-                <Movies movies={favMovies} user={user} setUser={setUser} />
+                <Movies movies={favMovies} />
             )}
             {editMode ? (
                 <>

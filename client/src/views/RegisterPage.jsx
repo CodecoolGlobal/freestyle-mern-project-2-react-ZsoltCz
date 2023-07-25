@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { MessageContext } from "../context/messageContext";
 
-function RegisterPage({ setMessage }) {
+function RegisterPage() {
     const navigate = useNavigate();
+
+    const { setMessage } = useContext(MessageContext);
 
     const [userInput, setUserInput] = useState({
         userName: "",

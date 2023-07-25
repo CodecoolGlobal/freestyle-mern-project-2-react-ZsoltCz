@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react'
 
 
 
-function MoviesPage({ APIKEY, user, setUser, setMessage }) {
+function MoviesPage({ APIKEY }) {
 
     const [movies, setMovies] = useState(null);
 
@@ -59,10 +59,7 @@ function MoviesPage({ APIKEY, user, setUser, setMessage }) {
             {movies && (
                 <>
                     <Movies
-                        user={user}
-                        setUser={setUser}
                         movies={movies}
-                        setMessage={setMessage}
                     />
                     <div>
                         <button

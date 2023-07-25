@@ -1,12 +1,15 @@
 import { Link, useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { UserContext } from "../context/userContext";
 
-export default function Navbar({ loggedIn, setLoggedIn, setUser }) {
+export default function Navbar() {
     const navigate = useNavigate();
 
+    const {user, setUser} = useContext(UserContext);
+
     const logoutHandler = () => {
-        setLoggedIn(false);
-        navigate("/login");
         setUser(null);
+        navigate("/login");
     };
 
     return (
@@ -24,7 +27,7 @@ export default function Navbar({ loggedIn, setLoggedIn, setUser }) {
                                 Movies
                             </Link>
                         </li>
-                        {loggedIn ? (
+                        {user ? (
                             <>
                                 <li>
                                     <Link className="navbarItem" to="/profile">

@@ -1,8 +1,14 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "../context/userContext";
+import { MessageContext } from "../context/messageContext";
 
-function LoginPage({ setLoggedIn, setUser, setMessage }) {
+function LoginPage() {
+
     const navigate = useNavigate();
+
+    const { setUser } = useContext(UserContext);
+    const { setMessage } = useContext(MessageContext);
 
     const [userInput, setUserInput] = useState({
         email: "",
@@ -23,7 +29,6 @@ function LoginPage({ setLoggedIn, setUser, setMessage }) {
 
             if (response.status === 200) {
                 const user = await response.json();
-                setLoggedIn(true);
                 setUser(user);
                 navigate("/");
                 setMessage({
@@ -33,12 +38,12 @@ function LoginPage({ setLoggedIn, setUser, setMessage }) {
             } else if (response.status === 401) {
                 setMessage({
                     class: "messageFailure",
-                    text: "Incorrect password",
+                    text: "Incorrect e-mail or password",
                 });
             } else if (response.status === 404) {
                 setMessage({
                     class: "messageFailure",
-                    text: "User not found",
+                    text: "Incorrect e-mail or password",
                 });
             }
         } catch (error) {
