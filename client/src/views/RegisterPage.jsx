@@ -35,15 +35,17 @@ function RegisterPage() {
                     text: "Successfully created account",
                 });
             } else {
+                const asd = await response.json();
+                console.log(asd)
                 setMessage({
                     class: "messageFailure",
-                    text: "Failed to create account",
+                    text: "text",
                 });
             }
         } catch (error) {
             setMessage({
                 class: "messageFailure",
-                text: "An error has occured",
+                text: asd.message,
             });
             console.error(error);
         }

@@ -14,7 +14,24 @@ const userSchema = new Schema({
     },
     password: {
         type: String,
-        required: true
+        required: true,
+        validate: {
+            validator: function(value) {
+                const errorArray = [];
+                if (value.length < 7) {
+                    errorArray.push('Password must be at least 7 characters long');
+                }
+                if (!/[0-9]/.test(value)) {
+                    errorArray.push('Password must contain at least 1 number');
+                }
+                if (errorArray.length > 0) {
+                    throw new Error(errorArray.join("\n"));
+                }
+            },
+            message: function(props) {
+                return props.reason.message;
+            }
+        }
     },
     favorites: {type: [String],
         default: []

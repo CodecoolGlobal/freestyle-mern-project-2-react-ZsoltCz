@@ -31,6 +31,10 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use((error, req, res, next) => {
+  res.status(400).json(error.message);
+});
+
 app.get("/api/v1/profile/:id", async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
