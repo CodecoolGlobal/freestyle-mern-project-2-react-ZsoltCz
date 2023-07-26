@@ -16,7 +16,6 @@ function LoginPage() {
     });
 
     const loginHandler = async (event) => {
-        console.log(userInput);
         event.preventDefault();
         try {
             const response = await fetch("http://localhost:3001/api/v1/login", {
@@ -35,22 +34,14 @@ function LoginPage() {
                     class: "messageSuccess",
                     text: "Successful login",
                 });
-            } else if (response.status === 401) {
-                setMessage({
-                    class: "messageFailure",
-                    text: "Incorrect e-mail or password",
-                });
-            } else if (response.status === 404) {
-                setMessage({
-                    class: "messageFailure",
-                    text: "Incorrect e-mail or password",
-                });
+            } else {
+                const error = await response.json();
+                throw new Error(error.error);
             }
         } catch (error) {
-            console.error(error);
             setMessage({
                 class: "messageFailure",
-                text: "An error has occured",
+                text: error.message,
             });
         }
     };

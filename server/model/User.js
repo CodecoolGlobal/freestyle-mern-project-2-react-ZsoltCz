@@ -18,8 +18,11 @@ const userSchema = new Schema({
         validate: {
             validator: function(value) {
                 const errorArray = [];
-                if (value.length < 7) {
-                    errorArray.push('Password must be at least 7 characters long');
+                if (value.length < 8) {
+                    errorArray.push('Password must be at least 8 characters long');
+                }
+                if (!/[a-zA-Z]/.test(value)) {
+                    errorArray.push("Password must contain at least 1 letter");
                 }
                 if (!/[0-9]/.test(value)) {
                     errorArray.push('Password must contain at least 1 number');

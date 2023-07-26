@@ -53,14 +53,14 @@ function ProfilePage({ APIKEY }) {
                     class: "messageSuccess",
                 });
             } else {
-                console.error("An error has occured");
-                setMessage({
-                    text: "Failed to update account",
-                    class: "messageFailure",
-                });
+                const error = await response.json();
+                throw new Error(error.error);
             }
         } catch (error) {
-            console.error(error);
+            setMessage({
+                text: error.message,
+                class: "messageFailure",
+            });
         }
     };
 
@@ -93,14 +93,14 @@ function ProfilePage({ APIKEY }) {
                     class: "messageSuccess",
                 });
             } else {
-                console.error("An error has occured");
-                setMessage({
-                    text: "Failed to delete account",
-                    class: "messageFailure",
-                });
+                const error = await response.json();
+                throw new Error(error.error);
             }
         } catch (error) {
-            console.error(error);
+            setMessage({
+                text: error.message,
+                class: "messageFailure",
+            });
         }
     };
 

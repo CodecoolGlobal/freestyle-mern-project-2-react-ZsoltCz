@@ -1,6 +1,7 @@
 import { MessageContext } from "../context/messageContext";
 import { useContext, useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import { createPortal } from 'react-dom';
 
 const MessageField = () => {
 
@@ -25,9 +26,7 @@ const MessageField = () => {
         };
     }, [message]);
 
-    return (
-        message && <div className={message.class}>{message.text}</div>
-    )
+    return createPortal(message && <div className={message.class}>{message.text}</div>, document.getElementById("message"));
 }
 
 export default MessageField

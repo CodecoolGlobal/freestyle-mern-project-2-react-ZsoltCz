@@ -31,25 +31,19 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use((error, req, res, next) => {
-  res.status(400).json(error.message);
-});
-
 app.get("/api/v1/profile/:id", async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     if (user) {
-      res.json(user);
-    } else {
-      res.status(404).send("Not found");
+      return res.json(user);
     }
+    throw new Error("Not found");
   } catch (error) {
-    console.error(error);
-    res.status(500).send("Not found");
+    next(error);
   }
 });
 
-app.post("/api/v1/register", async (req, res) => {
+app.post("/api/v1/register", async (req, res, next) => {
   const { email, userName, password } = req.body;
   try {
     const existingUser = await User.findOne({ email: email });
@@ -57,73 +51,67 @@ app.post("/api/v1/register", async (req, res) => {
       const user = await User.create({ email, userName, password });
       return res.json(user);
     }
-    res.status(400).send("E-mail already in use");
+    throw new Error("E-mail already in use");
   } catch (error) {
-    console.error(error);
-    res.status(500).send("Error");
+    next(error);
   }
 });
 
-app.put("/api/v1/profile/:id", async (req, res) => {
-    //console.log(req.body);
+app.put("/api/v1/profile/:id", async (req, res, next) => {
     const { userName, email, password, favorites } = req.body;
   try {
     const user = await User.findById(
       req.params.id
     );
-    //console.log(user)
     if (user) {
       user.password = password;
       user.userName = userName;
       user.email = email;
       user.favorites = favorites;
       await user.save({ validateModifiedOnly: true });
-      res.json(user);
-    } else {
-      res.status(404).send("User not found");
+      return res.json(user);
     }
+    throw new Error("User not found");
   } catch (error) {
-    console.error(error);
-    res.status(500).send("Error");
+    next(error);
   }
 });
 
-app.delete("/api/v1/profile/:id", async (req, res) => {
+app.delete("/api/v1/profile/:id", async (req, res, next) => {
   try {
     const user = await User.findByIdAndDelete(req.params.id);
-    console.log(req.params.id);
 
-    console.log(user);
     if (user) {
-      res.send("Successfully deleted user");
-    } else {
-      res.status(404).send("User not found");
+      return res.send("Successfully deleted user");
     }
+    throw new Error("Failed to delete user")
   } catch (error) {
-    console.error(error);
-    res.status(500).send("Error");
+    next(error);
   }
 });
 
-app.post("/api/v1/login", async (req, res) => {
+app.post("/api/v1/login", async (req, res, next) => {
   try {
     const user = await User.findOne({ email: req.body.email });
 
     if (user) {
       bcrypt.compare(req.body.password, user.password, (err, match) => {
         if (err) {
-          return res.status(500).send("An error has occured");
+          throw new Error("An error has occured");
         }
         if (match) {
-          res.status(200).json(user);
-        } else {
-          res.status(401).send("Incorrect e-mail or password");
+          return res.status(200).json(user);
         }
+        throw new Error("Incorrect credentials");
       })
     } else {
-      res.status(404).send("Incorrect e-mail or password");
+      throw new Error("Incorrect credentials");
     }
   } catch (error) {
-    console.error(error);
+    next(error);
   }
+});
+
+app.use((error, req, res, next) => {
+    res.status(400).json({error: error.message});
 });

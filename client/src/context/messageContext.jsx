@@ -5,7 +5,7 @@ export const MessageContext = createContext();
 const MessageContextProvider = ({ children }) => {
 
     const [message, setMessage] = useState(null);
-    console.log(message)
+    //console.log(message)
     return <MessageContext.Provider value={{message: message, setMessage: setMessage}}>{children}</MessageContext.Provider>;
 }
 
