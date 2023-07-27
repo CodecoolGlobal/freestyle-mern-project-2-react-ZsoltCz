@@ -11,6 +11,8 @@ function MoviesPage({ APIKEY }) {
 
     const [page, setPage] = useState(1);
 
+    const [type, setType] = useState("movie");
+
     const [userInput, setUserInpur] = useState("");
 
     const [maxPageNumber, setMaxPageNumber] = useState(null);
@@ -19,10 +21,14 @@ function MoviesPage({ APIKEY }) {
         setUserInpur(event.target.value);
     }
 
+    const typeSelectHandler = (event) => {
+        setType(event.target.value)
+    }
+
     useEffect((() => {
         async function fetchMovies() {
             try {
-                const response = await fetch(`http://www.omdbapi.com/?s=${userInput}&type=movie&page=${page}&apikey=${APIKEY}`);
+                const response = await fetch(`http://www.omdbapi.com/?s=${userInput}&type=${type}&page=${page}&apikey=${APIKEY}`);
                 const movies = await response.json();
 
 
@@ -39,7 +45,7 @@ function MoviesPage({ APIKEY }) {
         if (userInput) {
             fetchMovies();
         }
-    }), [page, userInput]);
+    }), [page, userInput, type]);
 
     const pageHandler = (event) => {
         setPage(prevPage => event.target.textContent === "Prev" ? prevPage - 1 : prevPage + 1);
@@ -49,18 +55,23 @@ function MoviesPage({ APIKEY }) {
 
     return (
         <main>
-            <label>Search movies:</label>
-            <input
-                className="searchBar"
-                placeholder="Search for movies..."
-                value={userInput}
-                onChange={movieSearchHandler}
-            ></input>
+            <label htmlFor="searchBar">Search media:</label>
+            <div>
+                <select value={type} onChange={typeSelectHandler}>
+                    <option value="movie">Movies</option>
+                    <option value="series">Series</option>
+                </select>
+                <input
+                    id="searchBar"
+                    className="searchBar"
+                    placeholder="Search for movies..."
+                    value={userInput}
+                    onChange={movieSearchHandler}
+                ></input>
+            </div>
             {movies && (
                 <>
-                    <Movies
-                        movies={movies}
-                    />
+                    <Movies movies={movies} />
                     <div>
                         <button
                             className="navButton"

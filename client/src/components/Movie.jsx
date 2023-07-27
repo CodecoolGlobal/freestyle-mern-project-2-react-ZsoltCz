@@ -34,21 +34,19 @@ export const favButtonHandler = async (event, movie, user, setUser, setMessage )
         if (response.status === 200) {
             const updatedUser = await response.json();
             setUser(updatedUser);
-            console.log(updatedUser);
-            console.log(`Successfully ${operation} favorites`);
             setMessage({
                 class: "messageSuccess",
                 text: `${movie.Title} ${operation} favorites`,
             });
         } else {
-            console.error("An error has occured");
-            setMessage({
-                class: "messageFailure",
-                text: `An error has occured`,
-            });
+            const error = await response.json();
+            throw new Error(error.error);
         }
     } catch (error) {
-        console.error(error);
+        setMessage({
+            class: "messageFailure",
+            text: error.message,
+        })
     }
 };
 
