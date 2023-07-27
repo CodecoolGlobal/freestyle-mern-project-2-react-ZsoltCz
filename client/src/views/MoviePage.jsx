@@ -42,19 +42,44 @@ export default function MoviePage() {
     const newFavButtonHandler = (event) =>
         favButtonHandler(event, movie, user, setUser, setMessage);
 
+        console.log(movie)
     return (
         movie && (
             <main>
-                <div>
-                    <h1>{movie.Title}</h1>
+                <div className="mediaTitle">
+                    <h1>
+                        {movie.Title} ({movie.Year})
+                    </h1>
                 </div>
                 <img src={movie.Poster} alt={movie.Title} />
-                <div>Genres: {movie.Genre}</div>
-                <div>{movie.Plot}</div>
-                <div>Director: {movie.Director}</div>
-                <div>Writers: {movie.Writer}</div>
-                <div>Actors: {movie.Actors}</div>
-                <FavoriteButton favButtonHandler={newFavButtonHandler} movie={movie} />
+                <div className="mediaDetails">
+                    <span>IMDB Rating:</span> {movie.imdbRating}
+                </div>
+                {movie.totalSeasons && (
+                    <div className="mediaDetails">
+                        <span>Seasons:</span> {movie.totalSeasons}
+                    </div>
+                )}
+                <div className="mediaDetails">
+                    <span>Runtime:</span> {movie.Runtime}
+                </div>
+                <div className="mediaDetails">
+                    <span>Genres:</span> {movie.Genre}
+                </div>
+                <div className="mediaDetails">{movie.Plot}</div>
+                <div className="mediaDetails">
+                    <span>Directors:</span> {movie.Director}
+                </div>
+                <div className="mediaDetails">
+                    <span>Writers:</span> {movie.Writer}
+                </div>
+                <div className="mediaDetails">
+                    <span>Actors:</span> {movie.Actors}
+                </div>
+                <FavoriteButton
+                    favButtonHandler={newFavButtonHandler}
+                    movie={movie}
+                />
             </main>
         )
     );

@@ -58,13 +58,12 @@ app.post("/api/v1/register", async (req, res, next) => {
 });
 
 app.put("/api/v1/profile/:id", async (req, res, next) => {
-    const { userName, email, password, favorites } = req.body;
+    const { userName, email, favorites } = req.body;
   try {
     const user = await User.findById(
       req.params.id
     );
     if (user) {
-      user.password = password;
       user.userName = userName;
       user.email = email;
       user.favorites = favorites;
@@ -74,6 +73,35 @@ app.put("/api/v1/profile/:id", async (req, res, next) => {
     throw new Error("User not found");
   } catch (error) {
     next(error);
+  }
+});
+
+app.put("/api/v1/profile/:id/changepassword", async (req, res, next) => {
+  const { password, newPassword } = req.body;
+  try {
+      const user = await User.findById(req.params.id).select("+password");
+      if (user) {
+        bcrypt.compare(password, user.password, async (err, match) => {
+          try {
+            if (err) {
+                throw new Error("An error has occured");
+            }
+            if (match) {
+                user.password = newPassword;
+                await user.save();
+                return res.json({message: "Password changed successfully"});
+            }
+            throw new Error("Wrong old password");
+          } catch (error) {
+            next(error);
+          }
+        });
+      }
+      else {
+        throw new Error("User not found");
+      }
+  } catch (error) {
+      next(error);
   }
 });
 
@@ -92,18 +120,18 @@ app.delete("/api/v1/profile/:id", async (req, res, next) => {
 
 app.post("/api/v1/login", async (req, res, next) => {
   try {
-    const user = await User.findOne({ email: req.body.email });
-
+    const user = await User.findOne({ email: req.body.email }).select("+password");
     if (user) {
       bcrypt.compare(req.body.password, user.password, (err, match) => {
         if (err) {
           throw new Error("An error has occured");
         }
         if (match) {
+          user.password = undefined;
           return res.status(200).json(user);
         }
-        throw new Error("Incorrect credentials");
-      })
+        return next(new Error("Incorrect credentials"));
+      });
     } else {
       throw new Error("Incorrect credentials");
     }

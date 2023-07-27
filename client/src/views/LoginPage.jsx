@@ -1,19 +1,33 @@
-import { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useContext, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { UserContext } from "../context/userContext";
 import { MessageContext } from "../context/messageContext";
 
 function LoginPage() {
 
+    const { setUser } = useContext(UserContext);
+    
+    const { setMessage } = useContext(MessageContext);
+    
+    const location = useLocation();
+    
     const navigate = useNavigate();
 
-    const { setUser } = useContext(UserContext);
-    const { setMessage } = useContext(MessageContext);
+    const registrationMessage = location?.state?.message;
 
     const [userInput, setUserInput] = useState({
         email: "",
         password: "",
     });
+
+    useEffect(() => {
+        if (registrationMessage) {
+            setMessage({
+                class: "messageSuccess",
+                text: registrationMessage,
+            });
+        }
+    }, [registrationMessage]);
 
     const loginHandler = async (event) => {
         event.preventDefault();
@@ -29,11 +43,7 @@ function LoginPage() {
             if (response.status === 200) {
                 const user = await response.json();
                 setUser(user);
-                navigate("/");
-                setMessage({
-                    class: "messageSuccess",
-                    text: "Successful login",
-                });
+                navigate("/", {state: {message: "Successful login"}});
             } else {
                 const error = await response.json();
                 throw new Error(error.error);

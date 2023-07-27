@@ -15,6 +15,7 @@ const userSchema = new Schema({
     password: {
         type: String,
         required: true,
+        select: false,
         validate: {
             validator: function(value) {
                 const errorArray = [];

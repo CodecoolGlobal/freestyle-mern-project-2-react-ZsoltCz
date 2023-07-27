@@ -29,10 +29,8 @@ function RegisterPage() {
 
             if (response.status === 200) {
                 console.log("Success");
-                navigate("/login");
-                setMessage({
-                    class: "messageSuccess",
-                    text: "Successfully created account",
+                navigate("/login", {
+                    state: { message: "Successfully created account" },
                 });
             } else {
                 const error = await response.json();

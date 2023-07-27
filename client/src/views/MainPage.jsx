@@ -1,7 +1,27 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useEffect, useContext } from 'react'
+import { Link, useLocation } from 'react-router-dom'
+import { MessageContext } from '../context/messageContext';
 
 function MainPage() {
+
+  const location = useLocation();
+
+  const { setMessage } = useContext(MessageContext);
+
+  console.log(location)
+
+  const message = location?.state?.message;
+  
+  useEffect(() => {
+    if (message) {
+      setMessage({
+        text: message,
+        class: "messageSuccess"
+      })
+    }
+  }, [message]
+  )
+
   return (
       <main>
           <h1>Welcome to our media site!</h1>

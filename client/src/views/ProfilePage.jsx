@@ -15,7 +15,8 @@ function ProfilePage({ APIKEY }) {
     const [userInput, setUserInput] = useState({
         userName: user.userName,
         email: user.email,
-        password: user.password,
+        password: "",
+        newPassword: "",
     });
 
     const [favMovies, setFavMovies] = useState(null);
@@ -85,13 +86,9 @@ function ProfilePage({ APIKEY }) {
             );
 
             if (response.status === 200) {
-                console.log("Successfully deleted account");
+                //console.log("Successfully deleted account");
                 setUser(null);
-                navigate("/");
-                setMessage({
-                    text: "Successfully deleted account",
-                    class: "messageSuccess",
-                });
+                navigate("/", {state: {message: "Successfully deleted account"}});
             } else {
                 const error = await response.json();
                 throw new Error(error.error);
@@ -103,6 +100,40 @@ function ProfilePage({ APIKEY }) {
             });
         }
     };
+
+    const updatePasswordHandler = async (event) => {
+        event.preventDefault();
+        try {
+            const response = await fetch(`http://localhost:3001/api/v1/profile/${user["_id"]}/changepassword`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    password: userInput.password,
+                    newPassword: userInput.newPassword
+                })
+            });
+            if (response.status === 200) {
+                const message = await response.json();
+
+                setEditMode(!editMode);
+                setMessage({
+                    text: message.message,
+                    class: "messageSuccess",
+                });
+            }
+            else {
+                const error = await response.json();
+                throw new Error(error.error);
+            }
+        } catch (error) {
+            setMessage({
+                text: error.message,
+                class: "messageFailure",
+            });
+        }
+    }
 
     const editModeHandler = () => {
         setEditMode(!editMode);
@@ -129,9 +160,7 @@ function ProfilePage({ APIKEY }) {
     return (
         <main>
             <h2>Favorites:</h2>
-            {!editMode && favMovies && (
-                <Movies movies={favMovies} />
-            )}
+            {!editMode && favMovies && <Movies movies={favMovies} />}
             {editMode ? (
                 <>
                     <form onSubmit={updateUserHandler}>
@@ -155,20 +184,33 @@ function ProfilePage({ APIKEY }) {
                                 onChange={inputChangeHandler}
                             />
                         </div>
-                        <div className="formInputContainer">
-                            <label>Password:</label>
-                            <input
-                                type="password"
-                                name="password"
-                                placeholder="Password"
-                                value={userInput.password}
-                                onChange={inputChangeHandler}
-                            />
-                        </div>
                         <button>Save changes</button>
                         <button onClick={cancelHandler} type="button">
                             Cancel
                         </button>
+                    </form>
+                    <form onSubmit={updatePasswordHandler}>
+                        <div className="formInputContainer">
+                            <label>New password:</label>
+                            <input
+                                type="password"
+                                name="newPassword"
+                                placeholder="New Password"
+                                value={userInput.newPassword}
+                                onChange={inputChangeHandler}
+                            />
+                        </div>
+                        <div className="formInputContainer">
+                            <label>Old password:</label>
+                            <input
+                                type="password"
+                                name="password"
+                                placeholder="Old Password"
+                                value={userInput.password}
+                                onChange={inputChangeHandler}
+                            />
+                        </div>
+                        <button>Change password</button>
                     </form>
                 </>
             ) : (

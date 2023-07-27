@@ -125,6 +125,7 @@ main {
 
 .movieInfoContainer {
   flex: 1;
+  width: 100%;
   display: flex;
   gap: 5px;
   flex-direction: column;
@@ -132,6 +133,21 @@ main {
 
 .movieContainer p {
   margin-top: auto;
+}
+
+.mediaDetails {
+  margin-top: 10px;
+  width: 80%;
+  text-align: center;
+}
+
+.mediaTitle {
+  margin-bottom: 24px;
+}
+
+.mediaDetails span {
+  font-weight: 700;
+  text-decoration: underline;
 }
 
 form {
@@ -164,7 +180,7 @@ input {
   margin-bottom: 20px;
 }
 
-.addFavButton, .removeFavButton {
+.movieContainer .addFavButton, .movieInfoContainer .removeFavButton {
   width: auto;
 }
 
@@ -211,4 +227,8 @@ input {
 
 .mainPageLink {
   color: blueviolet;
+}
+
+h2 {
+  margin-bottom: 24px;
 }
